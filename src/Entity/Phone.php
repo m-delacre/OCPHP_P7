@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\PhoneRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: PhoneRepository::class)]
 class Phone
@@ -12,12 +13,15 @@ class Phone
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups("getPhones")]
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
+    #[Groups("getPhones")]
     private ?string $model = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups("getPhones")]
     private ?string $marque = null;
 
     #[ORM\Column(length: 10)]
@@ -26,7 +30,8 @@ class Phone
     #[ORM\Column]
     private array $colors = [];
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 8, scale: 2)]
+    #[Groups("getPhones")]
     private ?string $price = null;
 
     public function getId(): ?int

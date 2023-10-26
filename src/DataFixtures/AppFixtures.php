@@ -17,8 +17,8 @@ class AppFixtures extends Fixture
         for ($i = 0; $i < 30; $i++) {
             $phone = new Phone();
             $phone->setMarque($faker->randomElement(['Apple', 'Xiaomi', 'Samsung', 'OnePlus', 'Google', 'Motorola']));
-            $phone->setBattery((string)$faker->numberBetween(2000,10000) . " mAh");
-            $phone->setModel(strtoupper($faker->randomLetter()) . (string)$faker->numberBetween(2,30));
+            $phone->setBattery((string)$faker->numberBetween(2000, 10000) . " mAh");
+            $phone->setModel(strtoupper($faker->randomLetter()) . (string)$faker->numberBetween(2, 30));
             $phone->setColors($faker->randomElements(["Bleu", "Rose", "Vert", "Or", "Pourpre", "Granite"], 3, false));
             $phone->setPrice((string)$faker->randomFloat(2, 300, 2000));
 
