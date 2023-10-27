@@ -8,7 +8,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
+use JMS\Serializer\SerializerInterface;
+use JMS\Serializer\SerializationContext;
 
 class PhoneController extends AbstractController
 {
@@ -17,7 +18,8 @@ class PhoneController extends AbstractController
     {
         $phoneList = $phoneRepository->findAll();
 
-        $jsonPhoneList = $serializer->serialize($phoneList, 'json', ["groups" => "getPhones"]);
+        $context = SerializationContext::create()->setGroups(['getPhones']);
+        $jsonPhoneList = $serializer->serialize($phoneList, 'json', $context);
 
         return new JsonResponse($jsonPhoneList, Response::HTTP_OK, [], true);
     }
