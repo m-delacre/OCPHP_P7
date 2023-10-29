@@ -2,8 +2,10 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Client;
 use App\Entity\Phone;
 use App\Entity\Company;
+use App\Repository\CompanyRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker;
@@ -48,6 +50,30 @@ class AppFixtures extends Fixture
         $company2->setPassword($this->userPasswordHasher->hashPassword($company2, "password"));
         $company2->setName("FREE");
         $manager->persist($company2);
+
+        // Clients company ORANGE fixtures 
+        for ($y = 0; $y < 30; $y++) {
+            $client = new Client();
+            $client->setCompany($company);
+            $client->setEmail($faker->email());
+            $client->setFirstName($faker->firstName());
+            $client->setLastName($faker->lastName());
+            $client->setPhoneNumber($faker->phoneNumber());
+
+            $manager->persist($client);
+        }
+
+        // Clients company FREE fixtures
+        for ($z = 0; $z < 30; $z++) {
+            $client2 = new Client();
+            $client2->setCompany($company2);
+            $client2->setEmail($faker->email());
+            $client2->setFirstName($faker->firstName());
+            $client2->setLastName($faker->lastName());
+            $client2->setPhoneNumber($faker->phoneNumber());
+
+            $manager->persist($client2);
+        }
 
         $manager->flush();
     }
