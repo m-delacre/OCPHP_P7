@@ -2,10 +2,10 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Address;
 use App\Entity\Client;
 use App\Entity\Phone;
 use App\Entity\Company;
-use App\Repository\CompanyRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker;
@@ -14,7 +14,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class AppFixtures extends Fixture
 {
     private $userPasswordHasher;
-    
+
     public function __construct(UserPasswordHasherInterface $userPasswordHasher)
     {
         $this->userPasswordHasher = $userPasswordHasher;
@@ -23,6 +23,7 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $faker = Faker\Factory::create('fr_FR');
+        $addressList = [];
 
         // Phone fixtures
         for ($i = 0; $i < 30; $i++) {
@@ -39,17 +40,31 @@ class AppFixtures extends Fixture
         // Company fixtures
         $company = new Company();
         $company->setEmail("user@orange.fr");
-        $company->setRoles(["ROLE_USER","ROLE_ORANGE"]);
+        $company->setRoles(["ROLE_USER", "ROLE_ORANGE"]);
         $company->setPassword($this->userPasswordHasher->hashPassword($company, "password"));
         $company->setName("ORANGE");
+
         $manager->persist($company);
 
         $company2 = new Company();
         $company2->setEmail("user@free.fr");
-        $company2->setRoles(["ROLE_USER","ROLE_FREE"]);
+        $company2->setRoles(["ROLE_USER", "ROLE_FREE"]);
         $company2->setPassword($this->userPasswordHasher->hashPassword($company2, "password"));
         $company2->setName("FREE");
+
         $manager->persist($company2);
+
+        // Address fixtures
+        for ($c = 0; $c < 60; $c++) {
+            $address = new Address();
+            $address->setCity($faker->city());
+            $address->setStreet($faker->streetAddress());
+            $address->setZipcode((int)$faker->postcode());
+
+            array_push($addressList, $address);
+
+            $manager->persist($address);
+        }
 
         // Clients company ORANGE fixtures 
         for ($y = 0; $y < 30; $y++) {
@@ -59,6 +74,7 @@ class AppFixtures extends Fixture
             $client->setFirstName($faker->firstName());
             $client->setLastName($faker->lastName());
             $client->setPhoneNumber($faker->phoneNumber());
+            $client->setAddress($addressList[$y]);
 
             $manager->persist($client);
         }
@@ -71,6 +87,7 @@ class AppFixtures extends Fixture
             $client2->setFirstName($faker->firstName());
             $client2->setLastName($faker->lastName());
             $client2->setPhoneNumber($faker->phoneNumber());
+            $client2->setAddress($addressList[30 + $z]);
 
             $manager->persist($client2);
         }
