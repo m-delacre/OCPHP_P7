@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ClientRepository;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
 class Client
@@ -11,12 +12,15 @@ class Client
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["getClients"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(["getClients"])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(["getClients"])]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
