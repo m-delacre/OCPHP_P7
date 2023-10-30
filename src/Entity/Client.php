@@ -31,11 +31,11 @@ class Client
 
     #[ORM\ManyToOne(inversedBy: 'clients')]
     #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(onDelete:"CASCADE")]
     private ?Company $company = null;
 
-    #[ORM\ManyToOne(inversedBy: 'clients')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Address $address = null;
+    #[ORM\Column(length: 255)]
+    private ?string $address = null;
 
     public function getId(): ?int
     {
@@ -102,12 +102,12 @@ class Client
         return $this;
     }
 
-    public function getAddress(): ?Address
+    public function getAddress(): ?string
     {
         return $this->address;
     }
 
-    public function setAddress(?Address $address): static
+    public function setAddress(string $address): static
     {
         $this->address = $address;
 

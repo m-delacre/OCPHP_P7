@@ -4,8 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Company;
 use App\Entity\Client;
-use App\Repository\ClientRepository;
-use App\Repository\CompanyRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,21 +13,15 @@ use JMS\Serializer\SerializationContext;
 
 class ClientController extends AbstractController
 {
-    #[Route('/api/{company}/clients', name: 'app_client')]
-    public function getAllClientsOfCompany(string $company, CompanyRepository $companyRepository, ClientRepository $clientRepository, SerializerInterface $serializer): JsonResponse
+    #[Route('/api/clients', name: 'app_client')]
+    public function getAllClientsOfCompany(SerializerInterface $serializer): JsonResponse
     {
-        $companyName = strtoupper($company);
-        $company = $companyRepository->findOneBy(["name"=>$companyName]);
-
+        /**
+         * @var Company
+         */
         $user = $this->getUser();
-        $userRoles = $user->getRoles();
-        $roleToFind = "ROLE_" . $companyName;
 
-        if (in_array($roleToFind, $userRoles) === false) {
-            return new JsonResponse(null, Response::HTTP_UNAUTHORIZED);
-        }
-
-        $clientList = $clientRepository->findBy(["company"=>$company]);
+        $clientList = $user->getClients();
 
         $context = SerializationContext::create()->setGroups(['getClients']);
         $jsonClientList = $serializer->serialize($clientList, 'json', $context);
