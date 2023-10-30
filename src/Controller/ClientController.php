@@ -13,6 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ClientController extends AbstractController
 {
@@ -53,10 +54,16 @@ class ClientController extends AbstractController
     }
 
     #[Route('/api/clients', name: 'api_client_create', methods: ['POST'])]
-    public function createClient(UrlGeneratorInterface $urlGenerator, Request $request, SerializerInterface $serializer, EntityManagerInterface $em): JsonResponse
+    public function createClient(UrlGeneratorInterface $urlGenerator, Request $request, SerializerInterface $serializer, EntityManagerInterface $em, ValidatorInterface $validator): JsonResponse
     {
         $client = $serializer->deserialize($request->getContent(), Client::class, "json");
         $client->setCompany($this->getUser());
+
+        $errors = $validator->validate($client);
+        if ($errors->count() > 0) {
+            return new JsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
+        }
+
         $em->persist($client);
         $em->flush();
 
@@ -69,7 +76,7 @@ class ClientController extends AbstractController
     }
 
     #[Route('/api/clients/{id}', name: 'api_client_update', methods: ['PUT'])]
-    public function updateBook(Request $request, SerializerInterface $serializer, Client $currentClient, EntityManagerInterface $em): JsonResponse
+    public function updateClient(Request $request, SerializerInterface $serializer, Client $currentClient, EntityManagerInterface $em, ValidatorInterface $validator): JsonResponse
     {
         /**
          * @var Company
@@ -78,12 +85,16 @@ class ClientController extends AbstractController
         if ($currentClient->getCompany() === $user) {
             $newClient = $serializer->deserialize($request->getContent(), Client::class, 'json');
 
+            $errors = $validator->validate($newClient);
+            if ($errors->count() > 0) {
+                return new JsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
+            }
+
             $currentClient->setAddress($newClient->getAddress());
             $currentClient->setEmail($newClient->getEmail());
             $currentClient->setFirstName($newClient->getFirstName());
             $currentClient->setLastName($newClient->getLastName());
             $currentClient->setPhoneNumber($newClient->getPhoneNumber());
-
 
             $em->persist($currentClient);
             $em->flush();
