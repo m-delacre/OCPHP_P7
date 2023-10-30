@@ -2,9 +2,10 @@
 
 namespace App\Entity;
 
-use App\Repository\ClientRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ClientRepository;
 use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
 class Client
@@ -16,10 +17,12 @@ class Client
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: "firstName is required")]
     #[Groups(["getClients", "getSingleClient"])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: "lastName is required")]
     #[Groups(["getClients", "getSingleClient"])]
     private ?string $lastName = null;
 
@@ -37,6 +40,8 @@ class Client
     private ?Company $company = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "address is required")]
+    #[Groups(["getSingleClient"])]
     private ?string $address = null;
 
     public function getId(): ?int
