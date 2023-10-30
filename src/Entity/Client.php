@@ -12,20 +12,22 @@ class Client
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["getClients"])]
+    #[Groups(["getClients", "getSingleClient"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
-    #[Groups(["getClients"])]
+    #[Groups(["getClients", "getSingleClient"])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 50)]
-    #[Groups(["getClients"])]
+    #[Groups(["getClients", "getSingleClient"])]
     private ?string $lastName = null;
 
+    #[Groups(["getSingleClient"])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
 
+    #[Groups(["getSingleClient"])]
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $phoneNumber = null;
 

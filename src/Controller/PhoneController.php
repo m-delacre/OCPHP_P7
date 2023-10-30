@@ -13,7 +13,7 @@ use JMS\Serializer\SerializationContext;
 
 class PhoneController extends AbstractController
 {
-    #[Route('/api/phones', name: 'api_phones')]
+    #[Route('/api/phones', name: 'api_phones', methods: ['GET'])]
     public function getAllPhones(PhoneRepository $phoneRepository, SerializerInterface $serializer): JsonResponse
     {
         $phoneList = $phoneRepository->findAll();
@@ -24,7 +24,7 @@ class PhoneController extends AbstractController
         return new JsonResponse($jsonPhoneList, Response::HTTP_OK, [], true);
     }
 
-    #[Route('/api/phones/{id}', name: 'api_phone_details')]
+    #[Route('/api/phones/{id}', name: 'api_phone_details', methods: ['GET'])]
     public function getPhoneDetails(Phone $phone, SerializerInterface $serializer): JsonResponse
     {
         if ($phone) {
