@@ -2,18 +2,17 @@
 
 namespace App\Controller;
 
-use App\Entity\Company;
 use App\Entity\Client;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\Id;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use App\Entity\Company;
 use JMS\Serializer\SerializerInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class ClientController extends AbstractController
 {
@@ -69,4 +68,21 @@ class ClientController extends AbstractController
         
         return new JsonResponse($jsonClient, Response::HTTP_CREATED, ["Location"=>$location], true);
     }
+
+    #[Route('/api/clients/{id}', name: 'api_client_update', methods: ['PUT'])]
+    public function updateBook(Request $request, SerializerInterface $serializer, Client $currentClient, EntityManagerInterface $em): JsonResponse 
+    {
+        $newClient = $serializer->deserialize($request->getContent(), Client::class, 'json');
+
+        $currentClient->setAddress($newClient->getAddress());
+        $currentClient->setEmail($newClient->getEmail());
+        $currentClient->setFirstName($newClient->getFirstName());
+        $currentClient->setLastName($newClient->getLastName());
+        $currentClient->setPhoneNumber($newClient->getPhoneNumber());
+
+        
+        $em->persist($currentClient);
+        $em->flush();
+        return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
+   }
 }
