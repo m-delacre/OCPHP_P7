@@ -10,13 +10,19 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use JMS\Serializer\SerializerInterface;
 use JMS\Serializer\SerializationContext;
+use Symfony\Component\HttpFoundation\Request;
 
 class PhoneController extends AbstractController
 {
     #[Route('/api/phones', name: 'api_phones', methods: ['GET'])]
-    public function getAllPhones(PhoneRepository $phoneRepository, SerializerInterface $serializer): JsonResponse
+    public function getAllPhones(PhoneRepository $phoneRepository, SerializerInterface $serializer, Request $request): JsonResponse
     {
-        $phoneList = $phoneRepository->findAll();
+        $page = $request->get('page', 1);
+        $limit = $request->get('limit', 5);
+
+
+
+        $phoneList = $phoneRepository->findAllWithPagination($page, $limit);
 
         $context = SerializationContext::create()->setGroups(['getPhones']);
         $jsonPhoneList = $serializer->serialize($phoneList, 'json', $context);
