@@ -48,7 +48,6 @@ class ClientController extends AbstractController
             } else {
                 return new JsonResponse(null, Response::HTTP_UNAUTHORIZED);
             }
-           
         }
         return new JsonResponse(null, Response::HTTP_NOT_FOUND);
     }
@@ -65,24 +64,33 @@ class ClientController extends AbstractController
         $jsonClient = $serializer->serialize($client, 'json', $context);
 
         $location = $urlGenerator->generate('api_client_details', ['id' => $client->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
-        
-        return new JsonResponse($jsonClient, Response::HTTP_CREATED, ["Location"=>$location], true);
+
+        return new JsonResponse($jsonClient, Response::HTTP_CREATED, ["Location" => $location], true);
     }
 
     #[Route('/api/clients/{id}', name: 'api_client_update', methods: ['PUT'])]
-    public function updateBook(Request $request, SerializerInterface $serializer, Client $currentClient, EntityManagerInterface $em): JsonResponse 
+    public function updateBook(Request $request, SerializerInterface $serializer, Client $currentClient, EntityManagerInterface $em): JsonResponse
     {
-        $newClient = $serializer->deserialize($request->getContent(), Client::class, 'json');
+        /**
+         * @var Company
+         */
+        $user = $this->getUser();
+        if ($currentClient->getCompany() === $user) {
+            $newClient = $serializer->deserialize($request->getContent(), Client::class, 'json');
 
-        $currentClient->setAddress($newClient->getAddress());
-        $currentClient->setEmail($newClient->getEmail());
-        $currentClient->setFirstName($newClient->getFirstName());
-        $currentClient->setLastName($newClient->getLastName());
-        $currentClient->setPhoneNumber($newClient->getPhoneNumber());
+            $currentClient->setAddress($newClient->getAddress());
+            $currentClient->setEmail($newClient->getEmail());
+            $currentClient->setFirstName($newClient->getFirstName());
+            $currentClient->setLastName($newClient->getLastName());
+            $currentClient->setPhoneNumber($newClient->getPhoneNumber());
 
-        
-        $em->persist($currentClient);
-        $em->flush();
-        return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
-   }
+
+            $em->persist($currentClient);
+            $em->flush();
+            return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
+        } else {
+            return new JsonResponse(null, Response::HTTP_UNAUTHORIZED);
+        }
+        return new JsonResponse(null, Response::HTTP_NOT_FOUND);
+    }
 }
