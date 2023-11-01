@@ -6,32 +6,46 @@ use App\Repository\PhoneRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
+use Hateoas\Configuration\Annotation as Hateoas;
 
+/**
+ * @Hateoas\Relation(
+ *      "self",
+ *      href = @Hateoas\Route(
+ *          "api_phone_details",
+ *          parameters = { "id" = "expr(object.getId())" }
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups="getPhones")
+ * )
+ *
+ */
 #[ORM\Entity(repositoryClass: PhoneRepository::class)]
 class Phone
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["getPhones"])]
+    #[Groups(["getPhones", "getSinglePhone"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(["getPhones"])]
+    #[Groups(["getPhones", "getSinglePhone"])]
     private ?string $model = null;
 
     #[ORM\Column(length: 50)]
-    #[Groups(["getPhones"])]
+    #[Groups(["getPhones", "getSinglePhone"])]
     private ?string $marque = null;
 
     #[ORM\Column(length: 10)]
+    #[Groups(["getSinglePhone"])]
     private ?string $battery = null;
 
     #[ORM\Column]
+    #[Groups(["getSinglePhone"])]
     private array $colors = [];
 
     #[ORM\Column(type: Types::DECIMAL, precision: 8, scale: 2)]
-    #[Groups(["getPhones"])]
+    #[Groups(["getPhones", "getSinglePhone"])]
     private ?string $price = null;
 
     public function getId(): ?int

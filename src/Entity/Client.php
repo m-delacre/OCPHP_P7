@@ -6,7 +6,37 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ClientRepository;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Hateoas\Configuration\Annotation as Hateoas;
 
+/**
+ * @Hateoas\Relation(
+ *      "self",
+ *      href = @Hateoas\Route(
+ *          "api_client_details",
+ *          parameters = { "id" = "expr(object.getId())" }
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups="getClients")
+ * )
+ *
+ * @Hateoas\Relation(
+ *      "delete",
+ *      href = @Hateoas\Route(
+ *          "api_client_delete",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups="getClients"),
+ * )
+ *
+ * @Hateoas\Relation(
+ *      "update",
+ *      href = @Hateoas\Route(
+ *          "api_client_update",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups="getClients"),
+ * )
+ *
+ */
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
 class Client
 {
@@ -36,7 +66,7 @@ class Client
 
     #[ORM\ManyToOne(inversedBy: 'clients')]
     #[ORM\JoinColumn(nullable: false)]
-    #[ORM\JoinColumn(onDelete:"CASCADE")]
+    #[ORM\JoinColumn(onDelete: "CASCADE")]
     private ?Company $company = null;
 
     #[ORM\Column(length: 255)]

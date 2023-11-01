@@ -34,7 +34,8 @@ class PhoneController extends AbstractController
     public function getPhoneDetails(Phone $phone, SerializerInterface $serializer): JsonResponse
     {
         if ($phone) {
-            $jsonPhone = $serializer->serialize($phone, 'json');
+            $context = SerializationContext::create()->setGroups(['getSinglePhone']);
+            $jsonPhone = $serializer->serialize($phone, 'json', $context);
             return new JsonResponse($jsonPhone, Response::HTTP_OK, [], true);
         }
 
