@@ -108,9 +108,17 @@ class ClientController extends AbstractController
     #[Route('/api/clients/{id}', name: 'api_client_delete', methods: ['DELETE'])]
     public function deleteClient(Client $client, EntityManagerInterface $em): JsonResponse
     {
-        $em->remove($client);
-        $em->flush();
+        /**
+         * @var Company
+         */
+        $user = $this->getUser();
+        if ($client->getCompany() === $user) {
+            $em->remove($client);
+            $em->flush();
 
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+            return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+        }
+
+        return new JsonResponse(null, Response::HTTP_UNAUTHORIZED);
     }
 }
