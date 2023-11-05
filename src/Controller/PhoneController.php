@@ -11,9 +11,29 @@ use Symfony\Component\Routing\Annotation\Route;
 use JMS\Serializer\SerializerInterface;
 use JMS\Serializer\SerializationContext;
 use Symfony\Component\HttpFoundation\Request;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Attributes as OA;
 
 class PhoneController extends AbstractController
 {
+    /**
+     * Retourne la liste des téléphones disponible chez BilMo.
+     *
+     * @param PhoneRepository $phoneRepository
+     * @param SerializerInterface $serializer
+     * @param Request $request
+     * @return JsonResponse
+     */
+    #[OA\Response(
+        response: 200,
+        description: "Retourne la liste des téléphones.",
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: Phone::class, groups: ['getPhones']))
+        )
+    )]
+    #[OA\Tag(name: 'Phones')]
     #[Route('/api/phones', name: 'api_phones', methods: ['GET'])]
     public function getAllPhones(PhoneRepository $phoneRepository, SerializerInterface $serializer, Request $request): JsonResponse
     {
@@ -30,6 +50,35 @@ class PhoneController extends AbstractController
         return new JsonResponse($jsonPhoneList, Response::HTTP_OK, [], true);
     }
 
+    /**
+     * Retourne les détails d'un téléphone.
+     * 
+     * @param SerializerInterface $serializer
+     * @return JsonResponse
+     */
+    #[OA\Response(
+        response: 200,
+        description: "Retourne les détails d'un téléphone.",
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: Phone::class, groups: ['getSinglePhone']))
+        )
+    )]
+    #[OA\Response(
+        response: 404,
+        description: "Le téléphone demandé n'existe pas.",
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: ExceptionSubscriber::class))
+        )
+    )]
+    #[OA\Parameter(
+        name: 'id',
+        in: 'query',
+        description: "L'id du téléphone dont vous voulez les détails.",
+        schema: new OA\Schema(type: 'string')
+    )]
+    #[OA\Tag(name: 'Phones')]
     #[Route('/api/phones/{id}', name: 'api_phone_details', methods: ['GET'])]
     public function getPhoneDetails(Phone $phone, SerializerInterface $serializer): JsonResponse
     {
