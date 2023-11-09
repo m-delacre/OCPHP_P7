@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Client;
 use App\Entity\Company;
-use App\EventSubscriber\ExceptionSubscriber;
 use JMS\Serializer\SerializerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
@@ -27,12 +26,19 @@ class ClientController extends AbstractController
      * @param SerializerInterface $serializer
      * @return JsonResponse
      */
+    // #[OA\Response(
+    //     response: 200,
+    //     description: "Retourne la liste des clients de l'utilisateur.",
+    //     content: new OA\JsonContent(
+    //         type: 'array',
+    //         items: new OA\Items(ref: new Model(type: Client::class, groups: ['getClients']))
+    //     )
+    // )]
     #[OA\Response(
         response: 200,
         description: "Retourne la liste des clients de l'utilisateur.",
         content: new OA\JsonContent(
-            type: 'array',
-            items: new OA\Items(ref: new Model(type: Client::class, groups: ['getClients']))
+            ref: '#/components/schemas/AllClients'
         )
     )]
     #[OA\Response(
@@ -57,7 +63,7 @@ class ClientController extends AbstractController
     }
 
     /**
-     * retourn les détails d'un client.
+     * Retourne les détails d'un client.
      * 
      * @param SerializerInterface $serializer
      * @return JsonResponse
@@ -66,23 +72,12 @@ class ClientController extends AbstractController
         response: 200,
         description: "Retourne les détails d'un client.",
         content: new OA\JsonContent(
-            type: 'array',
-            items: new OA\Items(ref: new Model(type: Client::class, groups: ['getSingleClient']))
+            ref: '#/components/schemas/ClientDetails'
         )
     )]
     #[OA\Response(
         response: 404,
-        description: "Le client demandé n'existe pas.",
-        content: new OA\JsonContent(
-            type: 'array',
-            items: new OA\Items(ref: new Model(type: ExceptionSubscriber::class))
-        )
-    )]
-    #[OA\Parameter(
-        name: 'id',
-        in: 'query',
-        description: "L'id du client dont vous voulez les détails.",
-        schema: new OA\Schema(type: 'string')
+        description: "Le client demandé n'existe pas."
     )]
     #[OA\Tag(name: 'Clients')]
     #[Route('/api/clients/{id}', name: 'api_client_details', methods: ['GET'])]
@@ -119,8 +114,7 @@ class ClientController extends AbstractController
         response: 201,
         description: "Le client a bien été ajouté.",
         content: new OA\JsonContent(
-            type: 'array',
-            items: new OA\Items(ref: new Model(type: Client::class, groups: ['getSingleClient']))
+            ref: '#/components/schemas/ClientDetails'
         )
     )]
     #[OA\Response(
@@ -130,13 +124,7 @@ class ClientController extends AbstractController
     #[OA\RequestBody(
         description: "Les champs pour créer un client :",
         content: new OA\JsonContent(
-            properties: [
-                new OA\Property(property: 'firstName', type: 'string'),
-                new OA\Property(property: 'lastName', type: 'string'),
-                new OA\Property(property: 'email', type: 'string'),
-                new OA\Property(property: 'phoneNumber', type: 'string'),
-                new OA\Property(property: 'address', type: 'string'),
-            ]
+            ref: '#/components/schemas/AddClient'
         )
     )]
     #[OA\Tag(name: 'Clients')]
@@ -181,7 +169,7 @@ class ClientController extends AbstractController
         description: "Veuillez vérifier le body de votre requête."
     )]
     #[OA\Response(
-        response: 401,
+        response: 403,
         description: "Vous n'êtes pas autorisé à modifier ce client.",
     )]
     #[OA\Response(
@@ -191,21 +179,8 @@ class ClientController extends AbstractController
     #[OA\RequestBody(
         description: "Les champs pour mettre à jour un client :",
         content: new OA\JsonContent(
-            properties: [
-                new OA\Property(property: 'id', type: 'int'),
-                new OA\Property(property: 'firstName', type: 'string'),
-                new OA\Property(property: 'lastName', type: 'string'),
-                new OA\Property(property: 'email', type: 'string'),
-                new OA\Property(property: 'phoneNumber', type: 'string'),
-                new OA\Property(property: 'address', type: 'string'),
-            ]
+            ref: '#/components/schemas/ClientDetails'
         )
-    )]
-    #[OA\Parameter(
-        name: 'id',
-        in: 'query',
-        description: "L'id du client que vous souhaitez modifier",
-        schema: new OA\Schema(type: 'string')
     )]
     #[OA\Tag(name: 'Clients')]
     #[Route('/api/clients/{id}', name: 'api_client_update', methods: ['PUT'])]
@@ -233,7 +208,7 @@ class ClientController extends AbstractController
             $em->flush();
             return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
         } else {
-            return new JsonResponse(null, Response::HTTP_UNAUTHORIZED);
+            return new JsonResponse(null, Response::HTTP_FORBIDDEN);
         }
         return new JsonResponse(null, Response::HTTP_NOT_FOUND);
     }

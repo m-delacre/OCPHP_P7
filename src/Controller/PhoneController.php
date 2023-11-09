@@ -33,6 +33,18 @@ class PhoneController extends AbstractController
             items: new OA\Items(ref: new Model(type: Phone::class, groups: ['getPhones']))
         )
     )]
+    #[OA\Parameter(
+        name: 'page',
+        in: 'query',
+        description: "Le numéro de la page de début.",
+        schema: new OA\Schema(type: 'string')
+    )]
+    #[OA\Parameter(
+        name: 'limit',
+        in: 'query',
+        description: "Combien d'éléments seront retournés.",
+        schema: new OA\Schema(type: 'string')
+    )]
     #[OA\Tag(name: 'Phones')]
     #[Route('/api/phones', name: 'api_phones', methods: ['GET'])]
     public function getAllPhones(PhoneRepository $phoneRepository, SerializerInterface $serializer, Request $request): JsonResponse
@@ -67,16 +79,6 @@ class PhoneController extends AbstractController
     #[OA\Response(
         response: 404,
         description: "Le téléphone demandé n'existe pas.",
-        content: new OA\JsonContent(
-            type: 'array',
-            items: new OA\Items(ref: new Model(type: ExceptionSubscriber::class))
-        )
-    )]
-    #[OA\Parameter(
-        name: 'id',
-        in: 'query',
-        description: "L'id du téléphone dont vous voulez les détails.",
-        schema: new OA\Schema(type: 'string')
     )]
     #[OA\Tag(name: 'Phones')]
     #[Route('/api/phones/{id}', name: 'api_phone_details', methods: ['GET'])]
