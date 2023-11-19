@@ -61,7 +61,5 @@ php bin/console doctrine:fixtures:load
 * Lancer votre serveur de bdd
 * Lancer le serveur php avec :
   ```
-  
   symfony server:start
-  
   ```
