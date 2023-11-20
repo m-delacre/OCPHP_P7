@@ -63,3 +63,11 @@ php bin/console doctrine:fixtures:load
   ```
   symfony server:start
   ```
+
+## Versions
+
+### Les versions utilisées pendant le développement :
+
+* Wampserver: 3.3.0
+* PHP: 8.0.26
+* MySQL: 8.0.31
